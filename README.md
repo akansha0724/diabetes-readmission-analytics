@@ -1,10 +1,13 @@
 # Healthcare Readmission Analytics — 30-Day Diabetes Readmissions
 
-**Business question:** which hospitalised diabetes patients will bounce back within 30 days — and what should the hospital do about it?
+**Business question:** which diabetic members/patients will be readmitted within 30 days — and who should act on it *before* they're discharged?
 
-30-day readmissions are the metric US hospitals are penalised on (CMS HRRP), and the discharge-planning team can only intervene *before* the patient leaves. This project analyses **101,766 encounters across 130 US hospitals** (UCI "Diabetes 130-US hospitals", 1999–2008) end-to-end: SQL cohort analysis → hypothesis tests → risk model → operational recommendation.
+**Why this matters to a payer (Optum / a Medicare Advantage plan), not just a hospital.** A 30-day readmission is a cost event for whoever bears the financial risk. Hospitals face CMS HRRP penalties; **payers pay the claim** and carry it in their medical-loss ratio. The *same* pre-discharge risk score has two buyers: a hospital uses it to target discharge planning, and a payer uses it to **route high-risk members into care management** (transitional-care calls, medication reconciliation, PCP follow-up) — the exact workflow Optum's population-health teams run. This project builds that shared risk layer.
+
+It analyses **101,766 encounters across 130 US hospitals** (UCI "Diabetes 130-US hospitals", 1999–2008) end-to-end: SQL cohort analysis → hypothesis tests → risk model → operational recommendation.
 
 **Stack:** MySQL 8.0 · Python (pandas, scipy, scikit-learn, seaborn) · SQL window functions
+**Two audiences:** provider (discharge planning) · **payer / population health (care-management targeting — Optum-style)**
 
 ## Headline findings
 
@@ -13,7 +16,7 @@
 3. **Measuring HbA1c is associated with fewer readmissions** (8.4% vs 9.1%, p=0.011) — replicating the original Strack et al. (2014) finding. Association, not causation: the test likely proxies attentive diabetes management.
 4. **A simple model turns this into an operating decision.** A random forest on 31 pre-discharge features reaches **ROC-AUC 0.64**; the top risk decile readmits at **17.1%** vs 3.5% for the bottom decile, and targeting the **top 30% of patients captures 48% of all 30-day readmissions**.
 
-**Recommendation:** score every patient at discharge; route the top three risk deciles to transitional care (48–72h phone follow-up, medication reconciliation, PCP appointment within 7 days). Every input the model needs is known before the patient leaves the building.
+**Recommendation:** score every patient at discharge; route the top three risk deciles to transitional care (48–72h phone follow-up, medication reconciliation, PCP appointment within 7 days). For a payer, that top-30% list **is the care-management enrolment list** — the members worth a nurse's phone call. Every input the model needs is known before the patient leaves the building.
 
 ## Results
 
